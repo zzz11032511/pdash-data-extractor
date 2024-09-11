@@ -21,6 +21,7 @@
 /out/
 /bin/
 /sandbox/
+*.zip
 
 # intellij
 /src/intellij*/*.iml
