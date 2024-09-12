@@ -33,6 +33,9 @@ object PDashDataExtractorMain {
           case "timelog.xml" => {
             val timeLogs = loadTimeLog(zipInputStream)
           }
+          case name if name.endsWith(".def") => {
+            val defectLogs = loadDefectLog(zipInputStream)
+          }
           case _ => null
         }
         
@@ -59,7 +62,6 @@ object PDashDataExtractorMain {
       logs.item(i).getNodeType() match {
         case Node.ELEMENT_NODE => {
           val timeLog = xmlElementToTimeLog(logs.item(i).asInstanceOf[Element])
-          println(timeLog)
           timeLogs = timeLogs :+ timeLog
         }
         case _ => null
@@ -81,6 +83,46 @@ object PDashDataExtractorMain {
       comment = safeGetAttributes(element, "comment").getOrElse("comment")
     )
   }
+
+  private def loadDefectLog(zipInputStream: ZipInputStream): List[DefectLog] = {
+    val byteArray = readZipEntryToByteArray(zipInputStream)
+    val byteArrayInputStream = new ByteArrayInputStream(byteArray)
+
+    val factory = DocumentBuilderFactory.newInstance()
+    val builder = factory.newDocumentBuilder()
+    val doc = builder.parse(byteArrayInputStream)
+    val root = doc.getDocumentElement()
+
+    var defectLogs: List[DefectLog] = Nil
+
+    val logs = root.getChildNodes()
+    for (i <- 0 until logs.getLength()) {
+      logs.item(i).getNodeType() match {
+        case Node.ELEMENT_NODE => {
+          val defectLog = xmlElementToDefectLog(logs.item(i).asInstanceOf[Element])
+          defectLogs = defectLogs :+ defectLog
+        }
+        case _ => null
+      }
+    }
+
+    defectLogs
+  }
+
+  private def xmlElementToDefectLog(element: Element): DefectLog = {
+    val path = safeGetAttributes(element, "path").getOrElse("")
+    new DefectLog(
+      ID = safeGetAttributes(element, "num").getOrElse("0").toInt,
+      defectType = safeGetAttributes(element, "type").getOrElse(""),
+      injected = safeGetAttributes(element, "inj").getOrElse(""),
+      removed = safeGetAttributes(element, "rem").getOrElse(""),
+      fixTime = safeGetAttributes(element, "ft").getOrElse("0").toDouble,
+      fixDefectID = safeGetAttributes(element, "fd").getOrElse("0").toInt,
+      description = safeGetAttributes(element, "desc").getOrElse(""),
+      injectedDate = timeStrToDate(safeGetAttributes(element, "date").getOrElse("0"))
+    )
+  }
+
 
   private def safeGetAttributes(element: Element, name: String): Option[String] = {
     val value = element.getAttribute(name)
