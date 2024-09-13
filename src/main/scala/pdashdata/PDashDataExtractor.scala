@@ -13,13 +13,21 @@ import org.w3c.dom.Node
 import org.w3c.dom.NodeList
 import org.w3c.dom.Element
 import org.w3c.dom.Attr
+import org.w3c.dom.NamedNodeMap
 
 import java.util.Date
-import org.w3c.dom.NamedNodeMap
 import java.util.jar.Attributes.Name
 
 object PDashDataExtractorMain {
   def main(args: Array[String]): Unit = {
+
+    val pData = new ProcessData(
+      List.empty[TimeLog],
+      Map.empty[Int, List[DefectLog]],
+      Map.empty[Int, Map[String, Any]]
+    )
+
+    val defParser = new DataFileParser()
 
     try {
       val zipFile = new File("./pdash-Furuta_Naoki-2024-07-27.zip")
@@ -27,15 +35,42 @@ object PDashDataExtractorMain {
       
       var zipEntry: ZipEntry = zipInputStream.getNextEntry()
       while (zipEntry != null) {
-        printf("file : ")
-        println(zipEntry.getName())
         zipEntry.getName() match {
           case "timelog.xml" => {
-            val timeLogs = loadTimeLog(zipInputStream)
+            pData.timeLog = loadTimeLog(zipInputStream)
           }
-          case name if name.endsWith(".def") => {
-            val defectLogs = loadDefectLog(zipInputStream)
-          }
+          case "1.dat" =>
+            pData.programDatas = pData.programDatas + (1 -> defParser.parseDataFile(zipInputStream))
+          case "2.dat" =>
+            pData.programDatas = pData.programDatas + (2 -> defParser.parseDataFile(zipInputStream))
+          case "3.dat" =>
+            pData.programDatas = pData.programDatas + (3 -> defParser.parseDataFile(zipInputStream))
+          case "4.dat" =>
+            pData.programDatas = pData.programDatas + (4 -> defParser.parseDataFile(zipInputStream))
+          case "6.dat" =>
+            pData.programDatas = pData.programDatas + (5 -> defParser.parseDataFile(zipInputStream))
+          case "7.dat" =>
+            pData.programDatas = pData.programDatas + (6 -> defParser.parseDataFile(zipInputStream))
+          case "8.dat" =>
+            pData.programDatas = pData.programDatas + (7 -> defParser.parseDataFile(zipInputStream))
+          case "9.dat" =>
+            pData.programDatas = pData.programDatas + (8 -> defParser.parseDataFile(zipInputStream))
+          case "0.def" =>
+            pData.defectLogs = pData.defectLogs + (1 -> loadDefectLog(zipInputStream))
+          case "1.def" =>
+            pData.defectLogs = pData.defectLogs + (2 -> loadDefectLog(zipInputStream))
+          case "2.def" =>
+            pData.defectLogs = pData.defectLogs + (3 -> loadDefectLog(zipInputStream))
+          case "3.def" =>
+            pData.defectLogs = pData.defectLogs + (4 -> loadDefectLog(zipInputStream))
+          case "5.def" =>
+            pData.defectLogs = pData.defectLogs + (5 -> loadDefectLog(zipInputStream))
+          case "6.def" =>
+            pData.defectLogs = pData.defectLogs + (6 -> loadDefectLog(zipInputStream))
+          case "7.def" =>
+            pData.defectLogs = pData.defectLogs + (7 -> loadDefectLog(zipInputStream))
+          case "8.def" =>
+            pData.defectLogs = pData.defectLogs + (8 -> loadDefectLog(zipInputStream))
           case _ => null
         }
         
