@@ -1,7 +1,7 @@
 import java.io.InputStream
 import java.util.Date
 
-class DataFileParser {
+object DataFileParser {
     /**
       * pdashのデータファイルの1行をパースする
       * "key=value"の形式で格納されているデータを(key, value)のタプルに変換する
