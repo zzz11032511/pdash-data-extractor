@@ -1,3 +1,5 @@
+package pdashdata
+
 import java.util.Date
 
 class DefectLog(

@@ -1,3 +1,5 @@
+package pdashdata
+
 import java.io.File
 import java.io.FileInputStream
 import java.util.zip.ZipEntry
@@ -9,19 +11,14 @@ import java.util.HashMap
 
 import scala.jdk.CollectionConverters._
 
-object PDashDataExtractorMain {
-    def main(args: Array[String]): Unit = {
-        if (args.length != 1) {
-            println("Usage: PDashDataExtractorMain [pdash datafile path]")
-            return
-        }
-        
+class PDashDataExtractor {
+    def extract(path: String): ProcessData = {        
         var timeLogs: List[TimeLog] = null
         var defectLogs: Map[Int, List[DefectLog]] = new HashMap[Int, List[DefectLog]]()
         var programDatas: Map[Int, Map[String, Any]] = new HashMap[Int, Map[String, Any]]()
 
         try {
-            val zipFile = new File(args(0))
+            val zipFile = new File(path)
             val zipInputStream = new ZipInputStream(new FileInputStream(zipFile))
             
             var zipEntry: ZipEntry = zipInputStream.getNextEntry()
@@ -70,6 +67,6 @@ object PDashDataExtractorMain {
             case e: Exception => println(e)
         }
 
-        val pData = new ProcessData(timeLogs, defectLogs, programDatas)
+        new ProcessData(timeLogs, defectLogs, programDatas)
     }
 }
