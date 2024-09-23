@@ -58,3 +58,6 @@ project/**/metals.sbt
 
 .bsp
 .history
+
+# test files
+Main.scala
