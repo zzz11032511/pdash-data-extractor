@@ -5,17 +5,11 @@ import java.io.FileInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-import java.util.List
-import java.util.Map
-import java.util.HashMap
-
-import scala.jdk.CollectionConverters._
-
 class PDashDataExtractor {
     def extract(path: String): ProcessData = {        
         var timeLogs: List[TimeLog] = null
-        var defectLogs: Map[Int, List[DefectLog]] = new HashMap[Int, List[DefectLog]]()
-        var programDatas: Map[Int, Map[String, Any]] = new HashMap[Int, Map[String, Any]]()
+        var defectLogs: Map[Int, List[DefectLog]] = Map[Int, List[DefectLog]]()
+        var programDatas: Map[Int, Map[String, Any]] = Map[Int, Map[String, Any]]()
 
         try {
             val zipFile = new File(path)
@@ -26,39 +20,55 @@ class PDashDataExtractor {
                 val input = ParserUtils.zipInputToByteArrayInput(zipInputStream)
                 zipEntry.getName() match {
                     case "timelog.xml" => 
-                        timeLogs = LogFileParser.parseTimeLog(input).asJava
+                        timeLogs = LogFileParser.parseTimeLog(input)
                     case "1.dat" =>
-                        programDatas.put(1, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(1 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "2.dat" =>
-                        programDatas.put(2, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(2 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "3.dat" =>
-                        programDatas.put(3, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(3 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "4.dat" =>
-                        programDatas.put(4, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(4 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "6.dat" =>
-                        programDatas.put(5, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(5 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "7.dat" =>
-                        programDatas.put(6, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(6 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "8.dat" =>
-                        programDatas.put(7, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(7 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "9.dat" =>
-                        programDatas.put(8, DataFileParser.parseDataFile(input).asJava)
+                        val pdataMap = Map(8 -> DataFileParser.parseDataFile(input))
+                        programDatas = programDatas ++ pdataMap
                     case "0.def" =>
-                        defectLogs.put(1, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(1 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "1.def" =>
-                        defectLogs.put(2, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(2 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "2.def" =>
-                        defectLogs.put(3, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(3 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "3.def" =>
-                        defectLogs.put(4, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(4 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "5.def" =>
-                        defectLogs.put(5, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(5 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "6.def" =>
-                        defectLogs.put(6, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(6 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "7.def" =>
-                        defectLogs.put(7, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(7 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case "8.def" =>
-                        defectLogs.put(8, LogFileParser.parseDefectLog(input).asJava)
+                        val dLogMap = Map(8 -> LogFileParser.parseDefectLog(input))
+                        defectLogs = defectLogs ++ dLogMap
                     case _ => null
                 }
                 zipEntry = zipInputStream.getNextEntry()
