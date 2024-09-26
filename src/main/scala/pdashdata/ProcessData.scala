@@ -3,10 +3,10 @@ package pdashdata
 import scala.jdk.CollectionConverters._
 
 class ProcessData(
-    var timeLogs: List[TimeLog], 
-    var defectLogs: Map[Int, List[DefectLog]], 
-    var programDatas: Map[Int, Map[String, Any]]
-){
+    val timeLogs: List[TimeLog], 
+    val defectLogs: Map[Int, List[DefectLog]], 
+    val programDatas: Map[Int, Map[String, Any]]
+) {
     def getTimeLogs(): List[TimeLog] = timeLogs
     def getTimeLogsAsJava(): java.util.List[TimeLog] = timeLogs.asJava
 
@@ -17,15 +17,6 @@ class ProcessData(
             defectLogsJava += (k -> v.asJava)
         })
         defectLogsJava.asJava
-    }
-
-    def getProgramDatas(): Map[Int, Map[String, Any]] = programDatas
-    def getProgramDatasAsJava(): java.util.Map[Int, java.util.Map[String, Any]] = {
-        var programDatasJava = Map[Int, java.util.Map[String, Any]]()
-        programDatas.foreach((k, v) => {
-            programDatasJava += (k -> v.asJava)
-        })
-        programDatasJava.asJava
     }
     
     def getTotalLOCs(): Map[Int, Int] = {

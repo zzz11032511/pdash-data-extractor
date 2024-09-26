@@ -11,4 +11,7 @@ class BaseParts(
     val actModified: Int,
     val actDeleted: Int,
 ) {
+    override def toString(): String = {
+        s"BaseParts(name=$name, estBase=$estBase, estAdded=$estAdded, estModified=$estModified, estDeleted=$estDeleted, actBase=$actBase, actAdded=$actAdded, actModified=$actModified, actDeleted=$actDeleted)"
+    }
 }

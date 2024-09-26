@@ -21,4 +21,3 @@ assemblyMergeStrategy in assembly := {
   case "src/main/scala/pdashdata/Main.scala" => MergeStrategy.discard
   case _ => MergeStrategy.first
 }
-```

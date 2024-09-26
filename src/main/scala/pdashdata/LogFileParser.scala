@@ -15,7 +15,7 @@ object LogFileParser {
      * @param input TimeLog.xmlを読み込んだInputStream
      * @return TimeLogのリスト
      */
-    def parseTimeLog(input: InputStream): List[TimeLog] = {
+    private[pdashdata] def parseTimeLog(input: InputStream): List[TimeLog] = {
         val factory = DocumentBuilderFactory.newInstance()
         val builder = factory.newDocumentBuilder()
         val doc = builder.parse(input)
@@ -56,7 +56,7 @@ object LogFileParser {
      * @param input DefectLog.xmlを読み込んだInputStream
      * @return DefectLogのリスト
      */
-    def parseDefectLog(input: InputStream): List[DefectLog] = {
+    private[pdashdata] def parseDefectLog(input: InputStream): List[DefectLog] = {
         val factory = DocumentBuilderFactory.newInstance()
         val builder = factory.newDocumentBuilder()
         val doc = builder.parse(input)

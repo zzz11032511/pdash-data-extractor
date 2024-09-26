@@ -2,6 +2,7 @@ package pdashdata
 
 import java.io.InputStream
 import java.util.Date
+import sizeestdata.BaseParts
 
 object DataFileParser {
     /**
@@ -11,7 +12,7 @@ object DataFileParser {
       * @param line データファイルから読み込んだ1行
       * @return (key, value)
       */
-    def parseLine(line: String): (String, String) = {
+    private[pdashdata] def parseLine(line: String): (String, String) = {
         val parts = line.split("=")
 
         var key = parts(0)
@@ -37,7 +38,7 @@ object DataFileParser {
      *       - Double : 数値
      *       - String : Additional Partsの名前などが該当
      */
-    def parseDataFile(input: InputStream): Map[String, Any] = {
+    private[pdashdata] def parseDataFile(input: InputStream): Map[String, Any] = {
         val lines = scala.io.Source.fromInputStream(input).getLines()
 
         // 最初の2行はヘッダーなので読み飛ばす
@@ -56,6 +57,42 @@ object DataFileParser {
         }
 
         programData
+    }
+
+    private[pdashdata] def loadBaseParts(programData: Map[String, Any]): List[BaseParts] = {
+        var baseParts = List[BaseParts]()
+
+        programData.get("Base_Parts_List")
+                   .getOrElse(List.empty[String])
+                   .asInstanceOf[List[String]]
+                   .foreach((programNum: String) => {
+            val name = getStringValue(programData, s"Base_Parts/$programNum/Description")
+            val estBase = getIntValue(programData, s"Base_Parts/$programNum/Base")
+            val estAdded = getIntValue(programData, s"Base_Parts/$programNum/Added")
+            val estModified = getIntValue(programData, s"Base_Parts/$programNum/Modified")
+            val estDeleted = getIntValue(programData, s"Base_Parts/$programNum/Deleted")
+            val actBase = getIntValue(programData, s"Base_Parts/$programNum/Actual Base")
+            val actAdded = getIntValue(programData, s"Base_Parts/$programNum/Actual Added")
+            val actModified = getIntValue(programData, s"Base_Parts/$programNum/Actual Modified")
+            val actDeleted = getIntValue(programData, s"Base_Parts/$programNum/Actual Deleted")
+
+            val basePart = new BaseParts(
+                name, estBase, estAdded, estModified, estDeleted,
+                actBase, actAdded, actModified, actDeleted
+            )
+
+            baseParts = baseParts :+ basePart
+        })
+
+        baseParts
+    }
+
+    private def getStringValue(programData: Map[String, Any], key: String): String = {
+        programData.get(key).getOrElse("").asInstanceOf[String]
+    }
+
+    private def getIntValue(programData: Map[String, Any], key: String): Int = {
+        programData.get(key).getOrElse(0).asInstanceOf[Double].toInt
     }
 
     private def convertValue(value: String): Any = {
