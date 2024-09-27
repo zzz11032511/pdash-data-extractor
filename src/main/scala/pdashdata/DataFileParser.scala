@@ -115,6 +115,25 @@ object DataFileParser {
         additionalParts
     }
 
+    private[pdashdata] def loadReusedParts(programData: Map[String, Any]): List[ReusedParts] = {
+        var reusedParts = List[ReusedParts]()
+
+        programData.get("Reused_Objects_List")
+                   .getOrElse(List.empty[String])
+                   .asInstanceOf[List[String]]
+                   .foreach((programNum: String) => {
+            val name = getStringValue(programData, s"Reused Objects/$programNum/Description")
+            val estSize = getDoubleValue(programData, s"Reused Objects/$programNum/LOC")
+            val actSize = getDoubleValue(programData, s"Reused Objects/$programNum/Actual LOC")
+
+            val reusedPart = new ReusedParts(name, estSize, actSize)
+
+            reusedParts = reusedParts :+ reusedPart
+        })
+
+        reusedParts
+    }
+
     private def getStringValue(programData: Map[String, Any], key: String): String = {
         programData.get(key).getOrElse("").asInstanceOf[String]
     }

@@ -5,4 +5,7 @@ class ReusedParts(
     val estSize: Double,
     val actSize: Double,
 ) {
+    override def toString: String = {
+        s"ReusedParts(name=$name, estSize=$estSize, actSize=$actSize)"
+    }
 }
