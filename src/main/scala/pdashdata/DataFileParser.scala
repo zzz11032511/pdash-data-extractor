@@ -86,6 +86,35 @@ object DataFileParser {
         baseParts
     }
 
+    private[pdashdata] def loadAdditionalParts(programData: Map[String, Any]): List[AdditionalParts] = {
+        var additionalParts = List[AdditionalParts]()
+
+        programData.get("New_Objects_List")
+                   .getOrElse(List.empty[String])
+                   .asInstanceOf[List[String]]
+                   .foreach((programNum: String) => {
+            val name = getStringValue(programData, s"New Objects/$programNum/Description")
+            val estSize = getDoubleValue(programData, s"New Objects/$programNum/LOC")
+            val actSize = getDoubleValue(programData, s"New Objects/$programNum/Actual LOC")
+            val relativeSize = getStringValue(programData, s"New Objects/$programNum/Relative Size")
+            val estNumOfMethod = getIntValue(programData, s"New Objects/$programNum/Methods")
+            val estIsNewReused = getDoubleValue(programData, s"New Objects/$programNum/New Reused?") == 1.0
+            val actNumOfMethod = getIntValue(programData, s"New Objects/$programNum/Actual Methods")
+            val actIsNewReused = getDoubleValue(programData, s"New Objects/$programNum/Actual New Reused?") == 1.0
+            val methodType = getStringValue(programData, s"New Objects/$programNum/Type")
+
+            val additionalPart = new AdditionalParts(
+                name, estSize, actSize, relativeSize,
+                estNumOfMethod, estIsNewReused,
+                actNumOfMethod, actIsNewReused,
+                methodType)
+
+            additionalParts = additionalParts :+ additionalPart
+        })
+
+        additionalParts
+    }
+
     private def getStringValue(programData: Map[String, Any], key: String): String = {
         programData.get(key).getOrElse("").asInstanceOf[String]
     }
