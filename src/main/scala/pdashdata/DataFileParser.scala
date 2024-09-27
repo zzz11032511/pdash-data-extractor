@@ -66,14 +66,14 @@ object DataFileParser {
                    .asInstanceOf[List[String]]
                    .foreach((programNum: String) => {
             val name = getStringValue(programData, s"Base_Parts/$programNum/Description")
-            val estBase = getIntValue(programData, s"Base_Parts/$programNum/Base")
-            val estAdded = getIntValue(programData, s"Base_Parts/$programNum/Added")
-            val estModified = getIntValue(programData, s"Base_Parts/$programNum/Modified")
-            val estDeleted = getIntValue(programData, s"Base_Parts/$programNum/Deleted")
-            val actBase = getIntValue(programData, s"Base_Parts/$programNum/Actual Base")
-            val actAdded = getIntValue(programData, s"Base_Parts/$programNum/Actual Added")
-            val actModified = getIntValue(programData, s"Base_Parts/$programNum/Actual Modified")
-            val actDeleted = getIntValue(programData, s"Base_Parts/$programNum/Actual Deleted")
+            val estBase = getDoubleValue(programData, s"Base_Parts/$programNum/Base")
+            val estAdded = getDoubleValue(programData, s"Base_Parts/$programNum/Added")
+            val estModified = getDoubleValue(programData, s"Base_Parts/$programNum/Modified")
+            val estDeleted = getDoubleValue(programData, s"Base_Parts/$programNum/Deleted")
+            val actBase = getDoubleValue(programData, s"Base_Parts/$programNum/Actual Base")
+            val actAdded = getDoubleValue(programData, s"Base_Parts/$programNum/Actual Added")
+            val actModified = getDoubleValue(programData, s"Base_Parts/$programNum/Actual Modified")
+            val actDeleted = getDoubleValue(programData, s"Base_Parts/$programNum/Actual Deleted")
 
             val basePart = new BaseParts(
                 name, estBase, estAdded, estModified, estDeleted,
@@ -90,8 +90,12 @@ object DataFileParser {
         programData.get(key).getOrElse("").asInstanceOf[String]
     }
 
+    private def getDoubleValue(programData: Map[String, Any], key: String): Double = {
+        programData.get(key).getOrElse(0.0).asInstanceOf[Double]
+    }
+
     private def getIntValue(programData: Map[String, Any], key: String): Int = {
-        programData.get(key).getOrElse(0.0).asInstanceOf[Double].toInt
+        getDoubleValue(programData, key).toInt
     }
 
     private def convertValue(value: String): Any = {
