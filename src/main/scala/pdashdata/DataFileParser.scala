@@ -91,7 +91,7 @@ object DataFileParser {
     }
 
     private def getIntValue(programData: Map[String, Any], key: String): Int = {
-        programData.get(key).getOrElse(0).asInstanceOf[Double].toInt
+        programData.get(key).getOrElse(0.0).asInstanceOf[Double].toInt
     }
 
     private def convertValue(value: String): Any = {
