@@ -1,4 +1,4 @@
-package sizeestdata
+package pdashdata
 
 class BaseParts(
     val name: String,

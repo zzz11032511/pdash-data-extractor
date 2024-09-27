@@ -2,7 +2,6 @@ package pdashdata
 
 import java.io.InputStream
 import java.util.Date
-import sizeestdata.BaseParts
 
 object DataFileParser {
     /**

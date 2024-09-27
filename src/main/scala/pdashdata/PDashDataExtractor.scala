@@ -77,6 +77,9 @@ class PDashDataExtractor {
             case e: Exception => println(e)
         }
 
+        val a = DataFileParser.loadBaseParts(programDatas(4))
+        a.foreach(println)
+
         new ProcessData(timeLogs, defectLogs, programDatas)
     }
 }
