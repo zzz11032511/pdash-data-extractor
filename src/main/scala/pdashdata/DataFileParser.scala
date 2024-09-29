@@ -68,6 +68,8 @@ object DataFileParser {
                 => strList.split("\u0002").toList.tail
             case strNumber if isDouble(strNumber)
                 => strNumber.toDouble
+            case strNumber if strNumber == "N/A"
+                => Double.NaN
             case _
                 => value
         }
