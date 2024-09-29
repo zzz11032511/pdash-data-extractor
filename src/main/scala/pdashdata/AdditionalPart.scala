@@ -1,6 +1,6 @@
 package pdashdata
 
-class AdditionalParts(
+class AdditionalPart(
     val name: String,
     val estSize: Double,
     val actSize: Double,
@@ -12,6 +12,6 @@ class AdditionalParts(
     val methodType: String,
 ) {
     override def toString(): String = {
-        s"AdditionalParts(name=$name, estSize=$estSize, actSize=$actSize, relativeSize=$relativeSize, estNumOfMethod=$estNumOfMethod, estIsNewReused=$estIsNewReused, actNumOfMethod=$actNumOfMethod, actIsNewReused=$actIsNewReused, methodType=$methodType)"
+        s"AdditionalPart(name=$name, estSize=$estSize, actSize=$actSize, relativeSize=$relativeSize, estNumOfMethod=$estNumOfMethod, estIsNewReused=$estIsNewReused, actNumOfMethod=$actNumOfMethod, actIsNewReused=$actIsNewReused, methodType=$methodType)"
     }
 }

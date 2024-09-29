@@ -40,7 +40,7 @@ object LogFileParser {
     private def xmlElementToTimeLog(element: Element): TimeLog = {
         val path = safeGetAttributes(element, "path").getOrElse("")
         new TimeLog(
-            ID = safeGetAttributes(element, "id").getOrElse("0").toInt,
+            id = safeGetAttributes(element, "id").getOrElse("0").toInt,
             program = pathToProgram(path),
             phase = pathToPhase(path),
             startTime = ParserUtils.timeStrToDate(safeGetAttributes(element, "start").getOrElse("0")),
@@ -81,7 +81,7 @@ object LogFileParser {
     private def xmlElementToDefectLog(element: Element): DefectLog = {
         val path = safeGetAttributes(element, "path").getOrElse("")
         new DefectLog(
-            ID = safeGetAttributes(element, "num").getOrElse("0").toInt,
+            id = safeGetAttributes(element, "num").getOrElse("0").toInt,
             defectType = safeGetAttributes(element, "type").getOrElse(""),
             injected = safeGetAttributes(element, "inj").getOrElse(""),
             removed = safeGetAttributes(element, "rem").getOrElse(""),

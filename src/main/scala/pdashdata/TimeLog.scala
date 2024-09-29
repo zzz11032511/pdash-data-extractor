@@ -3,7 +3,7 @@ package pdashdata
 import java.util.Date
 
 class TimeLog(
-    val ID: Int,
+    val id: Int,
     val program: String,
     val phase: String,
     val startTime: Date,
@@ -12,6 +12,6 @@ class TimeLog(
     val comment: String,
 ) {
     override def toString(): String = {
-        s"TimeLog($ID, $program, $phase, $startTime, $delta, $interrupt, $comment)"
+        s"TimeLog($id, $program, $phase, $startTime, $delta, $interrupt, $comment)"
     }
 }

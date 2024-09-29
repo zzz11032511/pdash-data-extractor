@@ -1,6 +1,6 @@
 package pdashdata
 
-class BaseParts(
+class BasePart(
     val name: String,
     val estBase: Double,
     val estAdded: Double,
@@ -12,6 +12,6 @@ class BaseParts(
     val actDeleted: Double,
 ) {
     override def toString(): String = {
-        s"BaseParts(name=$name, estBase=$estBase, estAdded=$estAdded, estModified=$estModified, estDeleted=$estDeleted, actBase=$actBase, actAdded=$actAdded, actModified=$actModified, actDeleted=$actDeleted)"
+        s"BasePart(name=$name, estBase=$estBase, estAdded=$estAdded, estModified=$estModified, estDeleted=$estDeleted, actBase=$actBase, actAdded=$actAdded, actModified=$actModified, actDeleted=$actDeleted)"
     }
 }

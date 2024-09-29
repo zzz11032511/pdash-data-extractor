@@ -3,7 +3,7 @@ package pdashdata
 import java.util.Date
 
 class DefectLog(
-    val ID: Int,
+    val id: Int,
     val defectType: String,
     val injected: String,
     val removed: String,
@@ -13,6 +13,6 @@ class DefectLog(
     val injectedDate: Date,
 ) {
     override def toString(): String = {
-        s"DefectLog(ID=$ID, defectType=$defectType, injected=$injected, removed=$removed, fixTime=$fixTime, fixDefectID=$fixDefectID, description=$description, injectedDate=$injectedDate)"
+        s"DefectLog(id=$id, defectType=$defectType, injected=$injected, removed=$removed, fixTime=$fixTime, fixDefectID=$fixDefectID, description=$description, injectedDate=$injectedDate)"
     }
 }
