@@ -14,6 +14,31 @@ class ProgramData(
     val probeList: List[String],
     val totalSize: Int,
 ) {
+    def getNum(): Int = num
+    
+    def getTimeLogs(): List[TimeLog] = timeLogs
+    def getTimeLogsAsJava(): java.util.List[TimeLog] = timeLogs.asJava
+
+    def getDefectLogs(): List[DefectLog] = defectLogs
+    def getDefectLogsAsJava(): java.util.List[DefectLog] = defectLogs.asJava
+
+    def getBaseParts(): List[BasePart] = baseParts
+    def getBasePartsAsJava(): java.util.List[BasePart] = baseParts.asJava
+
+    def getAdditionalParts(): List[AdditionalPart] = additionalParts
+    def getAdditionalPartsAsJava(): java.util.List[AdditionalPart] = additionalParts.asJava
+
+    def getReusedParts(): List[ReusedPart] = reusedParts
+    def getReusedPartsAsJava(): java.util.List[ReusedPart] = reusedParts.asJava
+
+    def getSizeEstimateData(): EstimateData = sizeEstimateData
+    def getTimeEstimateData(): EstimateData = timeEstimateData
+
+    def getProbeList(): List[String] = probeList
+    def getProbeListAsJava(): java.util.List[String] = probeList.asJava
+
+    def getTotalSize(): Int = totalSize
+
     override def toString(): String = {
         s"Program $num \n" +
         s"TimeLogs: $timeLogs \n" +

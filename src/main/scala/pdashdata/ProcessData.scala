@@ -14,4 +14,5 @@ class ProcessData(
     def getDefectLogsAsJava(): java.util.List[DefectLog] = defectLogs.asJava
 
     def getProgramDatas(): Map[Int, ProgramData] = programDatas
+    def getProgramDatasAsJava(): java.util.Map[Int, ProgramData] = programDatas.asJava
 }

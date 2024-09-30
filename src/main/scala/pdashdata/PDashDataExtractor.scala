@@ -6,6 +6,12 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
 class PDashDataExtractor {
+    /**
+      * Process Dashboardのプロセスデータを抽出する
+      *
+      * @param path プロセスデータのZIPファイルのパス
+      * @return プロセスデータ
+      */
     def extract(path: String): ProcessData = {        
         var timeLogs: List[TimeLog] = null
         var defectLogMap: Map[Int, List[DefectLog]] = Map[Int, List[DefectLog]]()
