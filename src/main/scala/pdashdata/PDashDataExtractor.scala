@@ -5,7 +5,7 @@ import java.io.FileInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
 
-class PDashDataExtractor {
+object PDashDataExtractor {
     /**
       * Process Dashboardのプロセスデータを抽出する
       *
@@ -149,7 +149,10 @@ class PDashDataExtractor {
                 actBase, actAdded, actModified, actDeleted
             )
 
-            baseParts = baseParts :+ basePart
+            // 名前が空の場合は追加しない
+            if (name != "") {
+                baseParts = baseParts :+ basePart
+            }
         })
 
         baseParts
@@ -178,7 +181,10 @@ class PDashDataExtractor {
                 actNumOfMethod, actIsNewReused,
                 methodType)
 
-            additionalParts = additionalParts :+ additionalPart
+            // 名前が空の場合は追加しない
+            if (name != "") {
+                additionalParts = additionalParts :+ additionalPart
+            }
         })
 
         additionalParts
@@ -197,7 +203,10 @@ class PDashDataExtractor {
 
             val reusedPart = new ReusedPart(name, estSize, actSize)
 
-            reusedParts = reusedParts :+ reusedPart
+            // 名前が空の場合は追加しない
+            if (name != "") {
+                reusedParts = reusedParts :+ reusedPart
+            }
         })
 
         reusedParts
