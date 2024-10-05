@@ -13,6 +13,6 @@ class DefectLog(
     val injectedDate: Date,
 ) {
     override def toString(): String = {
-        s"DefectLog(id=$id, defectType=$defectType, injected=$injected, removed=$removed, fixTime=$fixTime, fixDefectID=$fixDefectID, description=$description, injectedDate=$injectedDate)"
+        s"DefectLog(ID=$id, type=$defectType, injected=$injected, removed=$removed, fixTime=$fixTime, fixDefectID=$fixDefectID, description=$description, injectedDate=$injectedDate)"
     }
 }

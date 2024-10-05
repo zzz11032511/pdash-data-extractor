@@ -6,6 +6,6 @@ class ReusedPart(
     val actSize: Double,
 ) {
     override def toString: String = {
-        s"ReusedPart(name=$name, estSize=$estSize, actSize=$actSize)"
+        s"ReusedPart($name, est=$estSize, act=$actSize)"
     }
 }

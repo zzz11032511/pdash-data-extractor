@@ -12,6 +12,6 @@ class TimeLog(
     val comment: String,
 ) {
     override def toString(): String = {
-        s"TimeLog($id, $program, $phase, $startTime, $delta, $interrupt, $comment)"
+        s"TimeLog(ID=$id, $program, $phase, $startTime, delta=$delta, int=$interrupt, $comment)"
     }
 }

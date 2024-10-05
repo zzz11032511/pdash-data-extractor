@@ -12,6 +12,6 @@ class AdditionalPart(
     val methodType: String,
 ) {
     override def toString(): String = {
-        s"AdditionalPart(name=$name, estSize=$estSize, actSize=$actSize, relativeSize=$relativeSize, estNumOfMethod=$estNumOfMethod, estIsNewReused=$estIsNewReused, actNumOfMethod=$actNumOfMethod, actIsNewReused=$actIsNewReused, methodType=$methodType)"
+        s"AdditionalPart($name, est=$estSize, act=$actSize, relativeSize=$relativeSize, estNumOfMethod=$estNumOfMethod, estIsNewReused=$estIsNewReused, actNumOfMethod=$actNumOfMethod, actIsNewReused=$actIsNewReused, type=$methodType)"
     }
 }

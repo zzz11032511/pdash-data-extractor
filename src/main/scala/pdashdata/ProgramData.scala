@@ -38,17 +38,4 @@ class ProgramData(
     def getProbeListAsJava(): java.util.List[String] = probeList.asJava
 
     def getTotalSize(): Int = totalSize
-
-    override def toString(): String = {
-        s"Program $num \n" +
-        s"TimeLogs: $timeLogs \n" +
-        s"DefectLogs: $defectLogs \n" +
-        s"BaseParts: $baseParts \n" +
-        s"AdditionalParts: $additionalParts \n" +
-        s"ReusedParts: $reusedParts \n" +
-        s"SizeEstimateData: $sizeEstimateData \n" +
-        s"TimeEstimateData: $timeEstimateData \n" +
-        s"ProbeList: $probeList \n" +
-        s"TotalSize: $totalSize"
-    }
 }

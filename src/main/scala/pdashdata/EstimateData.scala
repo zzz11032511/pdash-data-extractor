@@ -12,6 +12,6 @@ class EstimateData(
     val upi: Double
 ) {
     override def toString(): String = {
-        s"EstimateData(value=$value, probeMethod=$probeMethod, beta0=$beta0, beta1=$beta1, intervalPercent=$intervalPercent, r2=$r2, range=$range, lpi=$lpi, upi=$upi)"
+        s"EstimateData($value, PROBE $probeMethod, beta0=$beta0, beta1=$beta1, intervalPercent=$intervalPercent, r2=$r2, range=$range, LPI=$lpi, UPI=$upi)"
     }
 }
