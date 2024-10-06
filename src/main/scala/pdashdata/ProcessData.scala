@@ -7,12 +7,7 @@ class ProcessData(
     val defectLogs: List[DefectLog], 
     val programDatas: Map[Int, ProgramData]
 ) {
-    def getTimeLogs(): List[TimeLog] = timeLogs
-    def getTimeLogsAsJava(): java.util.List[TimeLog] = timeLogs.asJava
-
-    def getDefectLogs(): List[DefectLog] = defectLogs
-    def getDefectLogsAsJava(): java.util.List[DefectLog] = defectLogs.asJava
-
-    def getProgramDatas(): Map[Int, ProgramData] = programDatas
-    def getProgramDatasAsJava(): java.util.Map[Int, ProgramData] = programDatas.asJava
+    def getTimeLogs(): java.util.List[TimeLog] = timeLogs.asJava
+    def getDefectLogs(): java.util.List[DefectLog] = defectLogs.asJava
+    def getProgramDatas(): java.util.Map[Int, ProgramData] = programDatas.asJava
 }

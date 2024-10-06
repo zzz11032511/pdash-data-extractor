@@ -4,8 +4,10 @@ import scala.jdk.CollectionConverters._
 
 class ProgramData(
     val num: Int,
+    val process: String,
     val timeLogs: List[TimeLog],
     val defectLogs: List[DefectLog],
+    val phaseDatas: Map[String, PhaseData],
     val baseParts: List[BasePart],
     val additionalParts: List[AdditionalPart],
     val reusedParts: List[ReusedPart],
@@ -15,27 +17,15 @@ class ProgramData(
     val totalSize: Int,
 ) {
     def getNum(): Int = num
-    
-    def getTimeLogs(): List[TimeLog] = timeLogs
-    def getTimeLogsAsJava(): java.util.List[TimeLog] = timeLogs.asJava
-
-    def getDefectLogs(): List[DefectLog] = defectLogs
-    def getDefectLogsAsJava(): java.util.List[DefectLog] = defectLogs.asJava
-
-    def getBaseParts(): List[BasePart] = baseParts
-    def getBasePartsAsJava(): java.util.List[BasePart] = baseParts.asJava
-
-    def getAdditionalParts(): List[AdditionalPart] = additionalParts
-    def getAdditionalPartsAsJava(): java.util.List[AdditionalPart] = additionalParts.asJava
-
-    def getReusedParts(): List[ReusedPart] = reusedParts
-    def getReusedPartsAsJava(): java.util.List[ReusedPart] = reusedParts.asJava
-
+    def getProcess(): String = process
+    def getTimeLogs(): java.util.List[TimeLog] = timeLogs.asJava
+    def getDefectLogs(): java.util.List[DefectLog] = defectLogs.asJava
+    def getPhaseDatas(): java.util.Map[String, PhaseData] = phaseDatas.asJava
+    def getBaseParts(): java.util.List[BasePart] = baseParts.asJava
+    def getAdditionalParts(): java.util.List[AdditionalPart] = additionalParts.asJava
+    def getReusedParts(): java.util.List[ReusedPart] = reusedParts.asJava
     def getSizeEstimateData(): EstimateData = sizeEstimateData
     def getTimeEstimateData(): EstimateData = timeEstimateData
-
-    def getProbeList(): List[String] = probeList
-    def getProbeListAsJava(): java.util.List[String] = probeList.asJava
-
+    def getProbeList(): java.util.List[String] = probeList.asJava
     def getTotalSize(): Int = totalSize
 }

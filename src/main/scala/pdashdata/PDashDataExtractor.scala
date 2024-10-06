@@ -4,6 +4,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
+import java.util.Date
 
 object PDashDataExtractor {
     /**
@@ -114,9 +115,19 @@ object PDashDataExtractor {
             val probeList = dataFileMap.get("PROBE_LIST").getOrElse(List.empty[String]).asInstanceOf[List[String]]
             val totalSize = getIntValue(dataFileMap, "Total LOC")
 
+            val process = num match {
+                case 1 => "PSP0"
+                case 2 => "PSP0.1"
+                case 3 => "PSP1.0"
+                case 4 => "PSP1.1"
+                case 5 => "PSP2.0"
+                case _ => "PSP2.1"
+            }
+
             val programData = new ProgramData(
-                num, timeLogs.filter(_.program == s"Program $num"), 
+                num, process, timeLogs.filter(_.program == s"Program $num"), 
                 defectLogMap.get(num).getOrElse(List.empty[DefectLog]),
+                loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMap),
                 basePart, additionalPart, reusedPart,
                 sizeEstimateData, timeEstimateData, probeList, totalSize
             )
@@ -125,6 +136,45 @@ object PDashDataExtractor {
         })
 
         programDatas
+    }
+
+    private def loadPhaseDatas(num: Int, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[String, Any]): Map[String, PhaseData] = {
+        var phaseDatas = Map[String, PhaseData]()
+
+        phaseDatas = phaseDatas
+            + ("Planning" -> loadPhaseData(num, "Planning", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Design" -> loadPhaseData(num, "Design", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Design Review" -> loadPhaseData(num, "Design Review", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Code" -> loadPhaseData(num, "Code", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Code Review" -> loadPhaseData(num, "Code Review", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Compile" -> loadPhaseData(num, "Compile", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Test" -> loadPhaseData(num, "Test", timeLogs, defectLogMap, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("Postmortem" -> loadPhaseData(num, "Postmortem", timeLogs, defectLogMap, dataFileMap))
+
+        phaseDatas
+    }
+
+    private def loadPhaseData(num: Int, phase: String, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[String, Any]): PhaseData = {
+        val started = getDateValue(dataFileMap, s"$phase/Started")
+        val completed = getDateValue(dataFileMap, s"$phase/Completed")
+        val time = getDoubleValue(dataFileMap, s"$phase/Time")
+        val estTime = getDoubleValue(dataFileMap, s"$phase/Estimated Time")
+        val injectDefects = getDoubleValue(dataFileMap, s"$phase/Defects Injected")
+        val estInjectDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Injected")
+        val removeDefects = getDoubleValue(dataFileMap, s"$phase/Defects Removed")
+        val estRemoveDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Removed")
+
+        new PhaseData(
+            started, completed, time, estTime, 
+            injectDefects, estInjectDefects, removeDefects, estRemoveDefects
+        )
     }
 
     private def loadBaseParts(programData: Map[String, Any]): List[BasePart] = {
@@ -236,5 +286,9 @@ object PDashDataExtractor {
 
     private def getIntValue(programData: Map[String, Any], key: String): Int = {
         getDoubleValue(programData, key).toInt
+    }
+
+    private def getDateValue(programData: Map[String, Any], key: String): Date = {
+        programData.get(key).getOrElse(new Date(0)).asInstanceOf[Date]
     }
 }
