@@ -113,7 +113,7 @@ object PDashDataExtractor {
             val sizeEstimateData = loadSizeEstimateData(dataFileMap, "Estimated New & Changed LOC")
             val timeEstimateData = loadSizeEstimateData(dataFileMap, "Estimated Time")
             val probeList = dataFileMap.get("PROBE_LIST").getOrElse(List.empty[String]).asInstanceOf[List[String]]
-            val totalSize = getIntValue(dataFileMap, "Total LOC")
+            val totalSize = getDoubleValue(dataFileMap, "Total LOC")
 
             val process = num match {
                 case 1 => "PSP0"
@@ -124,12 +124,15 @@ object PDashDataExtractor {
                 case _ => "PSP2.1"
             }
 
+            val programTimeLogs = timeLogs.filter(_.program == s"Program $num")
+            val totalTime = programTimeLogs.map(_.delta).sum
+            val programDefectLogs = defectLogMap.get(num).getOrElse(List.empty[DefectLog])
+            val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMap)
+
             val programData = new ProgramData(
-                num, process, timeLogs.filter(_.program == s"Program $num"), 
-                defectLogMap.get(num).getOrElse(List.empty[DefectLog]),
-                loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMap),
+                num, process, programTimeLogs, programDefectLogs, phaseDatas,
                 basePart, additionalPart, reusedPart,
-                sizeEstimateData, timeEstimateData, probeList, totalSize
+                sizeEstimateData, timeEstimateData, probeList, totalSize, totalTime
             )
 
             programDatas = programDatas + (num -> programData)
