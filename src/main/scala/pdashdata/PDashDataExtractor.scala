@@ -93,14 +93,14 @@ object PDashDataExtractor {
     }
 
     private def flatDefectLogMap(defectLogMap: Map[Int, List[DefectLog]]): List[DefectLog] = {
-        defectLogMap.get(1).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(2).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(3).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(4).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(5).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(6).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(7).getOrElse(List.empty[DefectLog]) ++
-        defectLogMap.get(8).getOrElse(List.empty[DefectLog])
+        defectLogMap.getOrElse(1, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(2, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(3, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(4, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(5, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(6, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(7, List.empty[DefectLog]) ++
+        defectLogMap.getOrElse(8, List.empty[DefectLog])
     }
 
     private def loadProgramDatas(timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMaps: Map[Int, Map[String, Any]]): Map[Int, ProgramData] = {
@@ -112,7 +112,7 @@ object PDashDataExtractor {
             val reusedPart = loadReusedParts(dataFileMap)
             val sizeEstimateData = loadSizeEstimateData(dataFileMap, "Estimated New & Changed LOC")
             val timeEstimateData = loadSizeEstimateData(dataFileMap, "Estimated Time")
-            val probeList = dataFileMap.get("PROBE_LIST").getOrElse(List.empty[String]).asInstanceOf[List[String]]
+            val probeList = dataFileMap.getOrElse("PROBE_LIST", List.empty[String]).asInstanceOf[List[String]]
             val totalSize = getDoubleValue(dataFileMap, "Total LOC")
 
             val process = num match {
@@ -126,7 +126,7 @@ object PDashDataExtractor {
 
             val programTimeLogs = timeLogs.filter(_.program == s"Program $num")
             val totalTime = programTimeLogs.map(_.delta).sum
-            val programDefectLogs = defectLogMap.get(num).getOrElse(List.empty[DefectLog])
+            val programDefectLogs = defectLogMap.getOrElse(num, List.empty[DefectLog])
             val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMap)
 
             val programData = new ProgramData(
@@ -183,8 +183,7 @@ object PDashDataExtractor {
     private def loadBaseParts(programData: Map[String, Any]): List[BasePart] = {
         var baseParts = List[BasePart]()
 
-        programData.get("Base_Parts_List")
-                   .getOrElse(List.empty[String])
+        programData.getOrElse("Base_Parts_List", List.empty[String])
                    .asInstanceOf[List[String]]
                    .foreach((programNum: String) => {
             val name = getStringValue(programData, s"Base_Parts/$programNum/Description")
@@ -214,8 +213,7 @@ object PDashDataExtractor {
     private def loadAdditionalParts(programData: Map[String, Any]): List[AdditionalPart] = {
         var additionalParts = List[AdditionalPart]()
 
-        programData.get("New_Objects_List")
-                   .getOrElse(List.empty[String])
+        programData.getOrElse("New_Objects_List", List.empty[String])
                    .asInstanceOf[List[String]]
                    .foreach((programNum: String) => {
             val name = getStringValue(programData, s"New Objects/$programNum/Description")
@@ -246,8 +244,7 @@ object PDashDataExtractor {
     private def loadReusedParts(programData: Map[String, Any]): List[ReusedPart] = {
         var reusedParts = List[ReusedPart]()
 
-        programData.get("Reused_Objects_List")
-                   .getOrElse(List.empty[String])
+        programData.getOrElse("Reused_Objects_List", List.empty[String])
                    .asInstanceOf[List[String]]
                    .foreach((programNum: String) => {
             val name = getStringValue(programData, s"Reused Objects/$programNum/Description")
@@ -280,11 +277,11 @@ object PDashDataExtractor {
     }
 
     private def getStringValue(programData: Map[String, Any], key: String): String = {
-        programData.get(key).getOrElse("").asInstanceOf[String]
+        programData.getOrElse(key, "").asInstanceOf[String]
     }
 
     private def getDoubleValue(programData: Map[String, Any], key: String): Double = {
-        programData.get(key).getOrElse(0.0).asInstanceOf[Double]
+        programData.getOrElse(key, 0.0).asInstanceOf[Double]
     }
 
     private def getIntValue(programData: Map[String, Any], key: String): Int = {
@@ -292,6 +289,6 @@ object PDashDataExtractor {
     }
 
     private def getDateValue(programData: Map[String, Any], key: String): Date = {
-        programData.get(key).getOrElse(new Date(0)).asInstanceOf[Date]
+        programData.getOrElse(key, new Date(0)).asInstanceOf[Date]
     }
 }
