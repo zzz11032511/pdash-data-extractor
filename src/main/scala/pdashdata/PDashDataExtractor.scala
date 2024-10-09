@@ -170,14 +170,14 @@ object PDashDataExtractor {
         val completed = getDateValue(dataFileMap, s"$phase/Completed")
         val time = getDoubleValue(dataFileMap, s"$phase/Time")
         val estTime = getDoubleValue(dataFileMap, s"$phase/Estimated Time")
-        val injectDefects = getDoubleValue(dataFileMap, s"$phase/Defects Injected")
-        val estInjectDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Injected")
-        val removeDefects = getDoubleValue(dataFileMap, s"$phase/Defects Removed")
-        val estRemoveDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Removed")
+        val injectedDefects = getDoubleValue(dataFileMap, s"$phase/Defects Injected")
+        val estInjectedDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Injected")
+        val removedDefects = getDoubleValue(dataFileMap, s"$phase/Defects Removed")
+        val estRemovedDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Removed")
 
         new PhaseData(
             started, completed, time, estTime, 
-            injectDefects, estInjectDefects, removeDefects, estRemoveDefects
+            injectedDefects, estInjectedDefects, removedDefects, estRemovedDefects
         )
     }
 
