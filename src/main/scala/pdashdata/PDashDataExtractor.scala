@@ -128,11 +128,12 @@ object PDashDataExtractor {
             val totalTime = programTimeLogs.map(_.delta).sum
             val programDefectLogs = defectLogMap.getOrElse(num, List.empty[DefectLog])
             val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMap)
+            val totalDefects = programDefectLogs.map(_.count).sum
 
             val programData = new ProgramData(
                 num, process, programTimeLogs, programDefectLogs, phaseDatas,
                 basePart, additionalPart, reusedPart,
-                sizeEstimateData, timeEstimateData, probeList, totalSize, totalTime
+                sizeEstimateData, timeEstimateData, probeList, totalSize, totalTime, totalDefects
             )
 
             programDatas = programDatas + (num -> programData)

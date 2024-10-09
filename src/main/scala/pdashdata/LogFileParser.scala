@@ -1,9 +1,6 @@
 package pdashdata
 
 import java.io.InputStream
-import java.util.Date
-
-import javax.xml.parsers.DocumentBuilder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Node
 import org.w3c.dom.Element
@@ -82,6 +79,7 @@ object LogFileParser {
         val path = safeGetAttributes(element, "path").getOrElse("")
         new DefectLog(
             id = safeGetAttributes(element, "num").getOrElse("0").toInt,
+            count = safeGetAttributes(element, "count").getOrElse("1").toInt,
             defectType = safeGetAttributes(element, "type").getOrElse(""),
             injected = safeGetAttributes(element, "inj").getOrElse(""),
             removed = safeGetAttributes(element, "rem").getOrElse(""),
@@ -95,7 +93,7 @@ object LogFileParser {
 
     private def safeGetAttributes(element: Element, name: String): Option[String] = {
         val value = element.getAttribute(name)
-        if (value.isEmpty()) {
+        if (value.isEmpty) {
             None
         } else {
             Some(value)

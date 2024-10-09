@@ -15,7 +15,8 @@ class ProgramData(
     val timeEstimateData: EstimateData,
     val probeList: List[String],
     val totalSize: Double,
-    val totalTime: Double
+    val totalTime: Double,
+    val totalDefect: Double,
 ) {
     def getNum(): Int = num
     def getProcess(): String = process
@@ -30,4 +31,5 @@ class ProgramData(
     def getProbeList(): java.util.List[String] = probeList.asJava
     def getTotalSize(): Double = totalSize
     def getTotalTime(): Double = totalTime
+    def getTotalDefect(): Double = totalDefect
 }

@@ -4,6 +4,7 @@ import java.util.Date
 
 class DefectLog(
     val id: Int,
+    val count: Int,
     val defectType: String,
     val injected: String,
     val removed: String,
@@ -13,6 +14,7 @@ class DefectLog(
     val injectedDate: Date,
 ) {
     def getID(): Int = id
+    def getCount(): Int = count
     def getDefectType(): String = defectType
     def getInjected(): String = injected
     def getRemoved(): String = removed
@@ -22,6 +24,6 @@ class DefectLog(
     def getInjectedDate(): Date = injectedDate
 
     override def toString(): String = {
-        s"DefectLog(ID=$id, type=$defectType, injected=$injected, removed=$removed, fixTime=$fixTime, fixDefectID=$fixDefectID, description=$description, injectedDate=$injectedDate)"
+        s"DefectLog(ID=$id, count=$count, type=$defectType, injected=$injected, removed=$removed, fixTime=$fixTime, fixDefectID=$fixDefectID, desc=$description, date=$injectedDate)"
     }
 }
