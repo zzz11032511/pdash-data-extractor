@@ -26,56 +26,67 @@ object PDashDataExtractor {
             while (zipEntry != null) {
                 val input = ParserUtils.zipInputToByteArrayInput(zipInputStream)
                 zipEntry.getName() match {
-                    case "timelog.xml" => 
-                        timeLogs = LogFileParser.parseTimeLog(input)
+                    case "timelog.xml" =>
+                        if (zipEntry.getSize != 0)
+                            timeLogs = LogFileParser.parseTimeLog(input)
+                        else
+                            timeLogs = List.empty[TimeLog]
                     case "1.dat" =>
-                        val pdataMap = Map(1 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(1 -> DataFileParser.parseDataFile(input))
                     case "2.dat" =>
-                        val pdataMap = Map(2 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(2 -> DataFileParser.parseDataFile(input))
                     case "3.dat" =>
-                        val pdataMap = Map(3 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(3 -> DataFileParser.parseDataFile(input))
                     case "4.dat" =>
-                        val pdataMap = Map(4 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(4 -> DataFileParser.parseDataFile(input))
                     case "6.dat" =>
-                        val pdataMap = Map(5 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(5 -> DataFileParser.parseDataFile(input))
                     case "7.dat" =>
-                        val pdataMap = Map(6 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(6 -> DataFileParser.parseDataFile(input))
                     case "8.dat" =>
-                        val pdataMap = Map(7 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(7 -> DataFileParser.parseDataFile(input))
                     case "9.dat" =>
-                        val pdataMap = Map(8 -> DataFileParser.parseDataFile(input))
-                        dataFileMap = dataFileMap ++ pdataMap
+                        dataFileMap = dataFileMap ++ Map(8 -> DataFileParser.parseDataFile(input))
                     case "0.def" =>
-                        val dLogMap = Map(1 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(1 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(1 -> List.empty[DefectLog])
                     case "1.def" =>
-                        val dLogMap = Map(2 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(2 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(2 -> List.empty[DefectLog])
                     case "2.def" =>
-                        val dLogMap = Map(3 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(3 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(3 -> List.empty[DefectLog])
                     case "3.def" =>
-                        val dLogMap = Map(4 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(4 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(4 -> List.empty[DefectLog])
                     case "5.def" =>
-                        val dLogMap = Map(5 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(5 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(5 -> List.empty[DefectLog])
                     case "6.def" =>
-                        val dLogMap = Map(6 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(6 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(6 -> List.empty[DefectLog])
                     case "7.def" =>
-                        val dLogMap = Map(7 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(7 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(7 -> List.empty[DefectLog])
                     case "8.def" =>
-                        val dLogMap = Map(8 -> LogFileParser.parseDefectLog(input))
-                        defectLogMap = defectLogMap ++ dLogMap
+                        if (zipEntry.getSize != 0)
+                            defectLogMap = defectLogMap ++ Map(8 -> LogFileParser.parseDefectLog(input))
+                        else
+                            defectLogMap = defectLogMap ++ Map(8 -> List.empty[DefectLog])
                     case _ => null
                 }
                 zipEntry = zipInputStream.getNextEntry()

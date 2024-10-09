@@ -15,23 +15,28 @@ object LogFileParser {
     private[pdashdata] def parseTimeLog(input: InputStream): List[TimeLog] = {
         val factory = DocumentBuilderFactory.newInstance()
         val builder = factory.newDocumentBuilder()
-        val doc = builder.parse(input)
-        val root = doc.getDocumentElement()
 
-        var timeLogs: List[TimeLog] = Nil
+        try {
+            val doc = builder.parse(input)
+            val root = doc.getDocumentElement()
 
-        val logs = root.getChildNodes()
-        for (i <- 0 until logs.getLength()) {
-            logs.item(i).getNodeType() match {
-                case Node.ELEMENT_NODE => {
-                    val timeLog = xmlElementToTimeLog(logs.item(i).asInstanceOf[Element])
-                    timeLogs = timeLogs :+ timeLog
+            var timeLogs: List[TimeLog] = Nil
+
+            val logs = root.getChildNodes()
+            for (i <- 0 until logs.getLength()) {
+                logs.item(i).getNodeType() match {
+                    case Node.ELEMENT_NODE => {
+                        val timeLog = xmlElementToTimeLog(logs.item(i).asInstanceOf[Element])
+                        timeLogs = timeLogs :+ timeLog
+                    }
+                    case _ => null
                 }
-                case _ => null
             }
-        }
 
-        timeLogs
+            timeLogs
+        } catch {
+            case parserError: org.xml.sax.SAXParseException => List.empty[TimeLog]
+        }
     }
 
     private def xmlElementToTimeLog(element: Element): TimeLog = {
@@ -56,23 +61,28 @@ object LogFileParser {
     private[pdashdata] def parseDefectLog(input: InputStream): List[DefectLog] = {
         val factory = DocumentBuilderFactory.newInstance()
         val builder = factory.newDocumentBuilder()
-        val doc = builder.parse(input)
-        val root = doc.getDocumentElement()
 
-        var defectLogs: List[DefectLog] = Nil
+        try {
+            val doc = builder.parse(input)
+            val root = doc.getDocumentElement()
 
-        val logs = root.getChildNodes()
-        for (i <- 0 until logs.getLength()) {
-            logs.item(i).getNodeType() match {
-                case Node.ELEMENT_NODE => {
-                    val defectLog = xmlElementToDefectLog(logs.item(i).asInstanceOf[Element])
-                    defectLogs = defectLogs :+ defectLog
+            var defectLogs: List[DefectLog] = Nil
+
+            val logs = root.getChildNodes()
+            for (i <- 0 until logs.getLength()) {
+                logs.item(i).getNodeType() match {
+                    case Node.ELEMENT_NODE => {
+                        val defectLog = xmlElementToDefectLog(logs.item(i).asInstanceOf[Element])
+                        defectLogs = defectLogs :+ defectLog
+                    }
+                    case _ => null
                 }
-                case _ => null
             }
-        }
 
-        defectLogs
+            defectLogs
+        } catch {
+            case parserError: org.xml.sax.SAXParseException => List.empty[DefectLog]
+        }
     }
 
     private def xmlElementToDefectLog(element: Element): DefectLog = {
