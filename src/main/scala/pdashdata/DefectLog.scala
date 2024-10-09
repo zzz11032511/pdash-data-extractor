@@ -4,7 +4,7 @@ import java.util.Date
 
 class DefectLog(
     val id: Int,
-    val count: Int,
+    val count: Double,
     val defectType: String,
     val injected: String,
     val removed: String,
@@ -14,7 +14,7 @@ class DefectLog(
     val injectedDate: Date,
 ) {
     def getID(): Int = id
-    def getCount(): Int = count
+    def getCount(): Double = count
     def getDefectType(): String = defectType
     def getInjected(): String = injected
     def getRemoved(): String = removed
