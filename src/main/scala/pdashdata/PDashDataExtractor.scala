@@ -138,7 +138,7 @@ object PDashDataExtractor {
             val programTimeLogs = timeLogs.filter(_.program == s"Program $num")
             val totalTime = programTimeLogs.map(_.delta).sum
             val programDefectLogs = defectLogMap.getOrElse(num, List.empty[DefectLog])
-            val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMap)
+            val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMaps)
             val totalDefects = programDefectLogs.map(_.count).sum
 
             val programData = new ProgramData(
@@ -153,7 +153,7 @@ object PDashDataExtractor {
         programDatas
     }
 
-    private def loadPhaseDatas(num: Int, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[String, Any]): Map[String, PhaseData] = {
+    private def loadPhaseDatas(num: Int, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[Int, Map[String, Any]]): Map[String, PhaseData] = {
         var phaseDatas = Map[String, PhaseData]()
 
         phaseDatas = phaseDatas
@@ -176,15 +176,112 @@ object PDashDataExtractor {
         phaseDatas
     }
 
-    private def loadPhaseData(num: Int, phase: String, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[String, Any]): PhaseData = {
-        val started = getDateValue(dataFileMap, s"$phase/Started")
-        val completed = getDateValue(dataFileMap, s"$phase/Completed")
-        val time = getDoubleValue(dataFileMap, s"$phase/Time")
-        val estTime = getDoubleValue(dataFileMap, s"$phase/Estimated Time")
-        val injectedDefects = getDoubleValue(dataFileMap, s"$phase/Defects Injected")
-        val estInjectedDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Injected")
-        val removedDefects = getDoubleValue(dataFileMap, s"$phase/Defects Removed")
-        val estRemovedDefects = getDoubleValue(dataFileMap, s"$phase/Estimated Defects Removed")
+    private def loadPhaseData(num: Int, phase: String, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[Int, Map[String, Any]]): PhaseData = {
+        val started = getDateValue(dataFileMap(num), s"$phase/Started")
+        val completed = getDateValue(dataFileMap(num), s"$phase/Completed")
+        val time = getDoubleValue(dataFileMap(num), s"$phase/Time")
+        val injectedDefects = getDoubleValue(dataFileMap(num), s"$phase/Defects Injected")
+        val removedDefects = getDoubleValue(dataFileMap(num), s"$phase/Defects Removed")
+
+        var estTime = getDoubleValue(dataFileMap(num), s"$phase/Estimated Time")
+        if (estTime == 0.0) {
+            if (1 < num && num <= 4) {
+                val phaseCumTime = (1 until num).map(i =>
+                    timeLogs.filter(_.program == s"Program $i")
+                      .filter(_.phase == phase)
+                      .map(_.delta)
+                      .sum
+                ).sum
+                val cumTime = (1 until num).map(i =>
+                    timeLogs.filter(_.program == s"Program $i")
+                      .map(_.delta)
+                      .sum
+                ).sum
+                val estTotalTime = getDoubleValue(dataFileMap(num), "Estimated Time")
+
+                estTime = (phaseCumTime / cumTime) * estTotalTime
+            } else if (5 <= num && num <= 8) {
+                val phaseCumTime = (5 until num).map(i =>
+                    timeLogs.filter(_.program == s"Program $i")
+                      .filter(_.phase == phase)
+                      .map(_.delta)
+                      .sum
+                ).sum
+                val cumTime = (5 until num).map(i =>
+                    timeLogs.filter(_.program == s"Program $i")
+                      .map(_.delta)
+                      .sum
+                ).sum
+                val estTotalTime = getDoubleValue(dataFileMap(num), "Estimated Time")
+
+                estTime = (phaseCumTime / cumTime) * estTotalTime
+            }
+        }
+
+        var estInjectedDefects = getDoubleValue(dataFileMap(num), s"$phase/Estimated Defects Injected")
+        var estRemovedDefects = getDoubleValue(dataFileMap(num), s"$phase/Estimated Defects Removed")
+        if (estInjectedDefects == 0.0 && num >= 5) {
+            val phaseCumInjDefects = if (num == 5) {
+                (1 until num).map(i =>
+                    defectLogMap(i).filter(_.injected == phase)
+                      .map(_.count)
+                      .sum
+                ).sum
+            } else {
+                (5 until num).map(i =>
+                    defectLogMap(i).filter(_.injected == phase)
+                      .map(_.count)
+                      .sum
+                ).sum
+            }
+
+            val phaseCumRemDefects = if (num == 5) {
+                (1 until num).map(i =>
+                    defectLogMap(i).filter(_.removed == phase)
+                      .map(_.count)
+                      .sum
+                ).sum
+            } else {
+                (5 until num).map(i =>
+                    defectLogMap(i).filter(_.removed == phase)
+                      .map(_.count)
+                      .sum
+                ).sum
+            }
+
+            val cumDefects = if (num == 5) {
+                (1 until num).map(i =>
+                    defectLogMap(i).map(_.count).sum
+                ).sum
+            } else {
+                (5 until num).map(i =>
+                    defectLogMap(i).map(_.count).sum
+                ).sum
+            }
+
+            val cumTotalSize = if (num == 5) {
+                (3 until num).map(i => {
+                    val cumAdded = loadBaseParts(dataFileMap(i)).map(_.actAdded).sum
+                    val cumModified = loadBaseParts(dataFileMap(i)).map(_.actModified).sum
+                    val cumPartsAdded = loadAdditionalParts(dataFileMap(i)).map(_.actSize).sum
+                    cumAdded + cumModified + cumPartsAdded
+                }).sum + getDoubleValue(dataFileMap(1), "Total LOC") + getDoubleValue(dataFileMap(2), "Total LOC")
+            } else {
+                (5 until num).map(i => {
+                    val cumAdded = loadBaseParts(dataFileMap(i)).map(_.actAdded).sum
+                    val cumModified = loadBaseParts(dataFileMap(i)).map(_.actModified).sum
+                    val cumPartsAdded = loadAdditionalParts(dataFileMap(i)).map(_.actSize).sum
+                    cumAdded + cumModified + cumPartsAdded
+                }).sum
+            }
+            val estTotalSize = getDoubleValue(dataFileMap(num), "Estimated New & Changed LOC")
+
+            val estTotalInjectedDefects = (cumDefects / cumTotalSize) * estTotalSize
+            estInjectedDefects = (phaseCumInjDefects / cumDefects) * estTotalInjectedDefects
+            if (estRemovedDefects == 0.0) {
+                estRemovedDefects = (phaseCumRemDefects / cumDefects) * estTotalInjectedDefects
+            }
+        }
 
         new PhaseData(
             started, completed, time, estTime, 

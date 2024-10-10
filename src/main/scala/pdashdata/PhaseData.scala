@@ -22,7 +22,8 @@ class PhaseData(
     def getEstRemoveDefects(): Double = estRemovedDefects
     
     override def toString(): String = {
-        s"PhaseData(started=$started, completed=$completed, time=$time, estTime=$estTime," + 
-        s"injected=$injectedDefects, estInjected=$estInjectedDefects, removed=$removedDefects, estRemoved=$estRemovedDefects)"
+        f"PhaseData(started=$started, completed=$completed, time=$time%3.0f, estTime=$estTime%3.0f, " +
+        f"injected=$injectedDefects%2.2f, estInjected=$estInjectedDefects%2.2f, " +
+        f"removed=$removedDefects%2.2f, estRemoved=$estRemovedDefects%2.2f)"
     }
 }
