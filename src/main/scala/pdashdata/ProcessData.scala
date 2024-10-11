@@ -3,9 +3,9 @@ package pdashdata
 import scala.jdk.CollectionConverters._
 
 class ProcessData(
-    val timeLogs: List[TimeLog], 
-    val defectLogs: List[DefectLog], 
-    val programDatas: Map[Int, ProgramData]
+    val timeLogs: List[TimeLog],     // 時間ログ
+    val defectLogs: List[DefectLog], // 欠陥ログ
+    val programDatas: Map[Int, ProgramData] // 課題ごとのデータ
 ) {
     def getTimeLogs(): java.util.List[TimeLog] = timeLogs.asJava
     def getDefectLogs(): java.util.List[DefectLog] = defectLogs.asJava

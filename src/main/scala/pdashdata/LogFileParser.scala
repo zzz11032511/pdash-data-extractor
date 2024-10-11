@@ -26,6 +26,8 @@ object LogFileParser {
             for (i <- 0 until logs.getLength()) {
                 logs.item(i).getNodeType() match {
                     case Node.ELEMENT_NODE => {
+                        // logs.itemにはElement以外のノードも含まれるが、
+                        // データが格納されているのはElementノードのみ
                         val timeLog = xmlElementToTimeLog(logs.item(i).asInstanceOf[Element])
                         timeLogs = timeLogs :+ timeLog
                     }
@@ -39,11 +41,18 @@ object LogFileParser {
         }
     }
 
+    /**
+     * XML ElementをTimeLogオブジェクトに変換する
+     */
     private def xmlElementToTimeLog(element: Element): TimeLog = {
         val path = safeGetAttributes(element, "path").getOrElse("")
+
+        // レポート課題の時間ログの場合はプログラム番号を0とする
+        val programNumber = if (path.contains("Report")) then 0 else pathToProgramNumber(path)
+
         new TimeLog(
             id = safeGetAttributes(element, "id").getOrElse("0").toInt,
-            program = pathToProgram(path),
+            programNumber = programNumber,
             phase = pathToPhase(path),
             startTime = ParserUtils.timeStrToDate(safeGetAttributes(element, "start").getOrElse("0")),
             delta = safeGetAttributes(element, "delta").getOrElse("0").toDouble,
@@ -53,12 +62,27 @@ object LogFileParser {
     }
 
     /**
+     * パスからフェーズ名を取得する
+     * 
+     * TimeLogには "Non Project/PSP for Engineers/Program 1/フェーズ名"
+     * という形式の文字列(path)が格納されている
+     */
+    private def pathToPhase(path: String): String = {
+        val parts = path.split("/")
+        if (parts.length < 5) "" else parts(4)
+    }
+
+    /**
      * pdashのDefectLog.xmlをパースする
      * 
+     * DefectLogにはプログラム番号が含まれていないため、
+     * 引数で現在読み込んでいるDefectLogファイルのプログラム番号を指定する
+     * 
      * @param input DefectLog.xmlを読み込んだInputStream
+     * @param programNumber プログラム番号
      * @return DefectLogのリスト
      */
-    private[pdashdata] def parseDefectLog(input: InputStream): List[DefectLog] = {
+    private[pdashdata] def parseDefectLog(input: InputStream, programNumber: Int): List[DefectLog] = {
         val factory = DocumentBuilderFactory.newInstance()
         val builder = factory.newDocumentBuilder()
 
@@ -72,7 +96,9 @@ object LogFileParser {
             for (i <- 0 until logs.getLength()) {
                 logs.item(i).getNodeType() match {
                     case Node.ELEMENT_NODE => {
-                        val defectLog = xmlElementToDefectLog(logs.item(i).asInstanceOf[Element])
+                        // logs.itemにはElement以外のノードも含まれるが、
+                        // データが格納されているのはElementノードのみ
+                        val defectLog = xmlElementToDefectLog(logs.item(i).asInstanceOf[Element], programNumber)
                         defectLogs = defectLogs :+ defectLog
                     }
                     case _ => null
@@ -85,10 +111,14 @@ object LogFileParser {
         }
     }
 
-    private def xmlElementToDefectLog(element: Element): DefectLog = {
+    /**
+     * XML ElementをDefectLogオブジェクトに変換する
+     */
+    private def xmlElementToDefectLog(element: Element, programNumber: Int): DefectLog = {
         val path = safeGetAttributes(element, "path").getOrElse("")
         new DefectLog(
             id = safeGetAttributes(element, "num").getOrElse("0").toInt,
+            programNumber = programNumber,
             count = safeGetAttributes(element, "count").getOrElse("1").toInt,
             defectType = safeGetAttributes(element, "type").getOrElse(""),
             injected = safeGetAttributes(element, "inj").getOrElse(""),
@@ -101,6 +131,12 @@ object LogFileParser {
     }
 
 
+    /**
+     * XML Element(Logデータ)から属性値を安全に取得する
+     * 
+     * 属性値が存在する場合はSome(value)、
+     * 属性値が空文字の場合はNoneを返す
+     */
     private def safeGetAttributes(element: Element, name: String): Option[String] = {
         val value = element.getAttribute(name)
         if (value.isEmpty) {
@@ -108,15 +144,22 @@ object LogFileParser {
         } else {
             Some(value)
         }
+
     }
 
-    private def pathToProgram(path: String): String = {
+    /**
+     * パスからプログラム番号をInt型で取得する
+     * 
+     * TimeLogには "Non Project/PSP for Engineers/Program 課題番号/フェーズ名"
+     * という形式の文字列(path)が格納されている
+     */
+    private def pathToProgramNumber(path: String): Int = {
         val parts = path.split("/")
-        if (parts.length < 4) "" else parts(3)
-    }
-
-    private def pathToPhase(path: String): String = {
-        val parts = path.split("/")
-        if (parts.length < 5) "" else parts(4)
+        if (parts.length < 4) {
+            0
+        } else {
+            // 例: "Program 1" -> ["Program", "1"](1) -> 1
+            parts(3).split(" ")(1).toInt
+        }
     }
 }

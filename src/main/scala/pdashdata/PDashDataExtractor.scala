@@ -8,101 +8,108 @@ import java.util.Date
 
 object PDashDataExtractor {
     /**
-      * Process Dashboardのプロセスデータを抽出する
-      *
-      * @param path プロセスデータのZIPファイルのパス
-      * @return プロセスデータ
-      */
-    def extract(path: String): ProcessData = {        
+     * Process Dashboardのプロセスデータを抽出する
+     *
+     * @param path プロセスデータのZIPファイルのパス
+     * @return プロセスデータ
+     */
+    def extract(path: String): ProcessData = {
+        val (timeLogs, defectLogs, dataFileMap) = loadProcessDataZip(path)
+        val programDatas = loadProgramDatas(timeLogs, defectLogs, dataFileMap)
+
+        new ProcessData(timeLogs, defectLogs, programDatas)
+    }
+
+    /**
+     * プロセスデータのZIPファイルを読み込み
+     * 時間ログ、欠陥ログ、課題ごとのデータファイルをまとめたタプルとして返す
+     */
+    private def loadProcessDataZip(path: String): (List[TimeLog], List[DefectLog], Map[Int, Map[String, Any]]) = {
         var timeLogs: List[TimeLog] = null
         var defectLogMap: Map[Int, List[DefectLog]] = Map[Int, List[DefectLog]]()
         var dataFileMap: Map[Int, Map[String, Any]] = Map[Int, Map[String, Any]]()
 
-        try {
-            val zipFile = new File(path)
-            val zipInputStream = new ZipInputStream(new FileInputStream(zipFile))
-            
-            var zipEntry: ZipEntry = zipInputStream.getNextEntry()
-            while (zipEntry != null) {
-                val input = ParserUtils.zipInputToByteArrayInput(zipInputStream)
-                zipEntry.getName() match {
-                    case "timelog.xml" =>
-                        if (zipEntry.getSize != 0)
-                            timeLogs = LogFileParser.parseTimeLog(input)
-                        else
-                            timeLogs = List.empty[TimeLog]
-                    case "1.dat" =>
-                        dataFileMap = dataFileMap ++ Map(1 -> DataFileParser.parseDataFile(input))
-                    case "2.dat" =>
-                        dataFileMap = dataFileMap ++ Map(2 -> DataFileParser.parseDataFile(input))
-                    case "3.dat" =>
-                        dataFileMap = dataFileMap ++ Map(3 -> DataFileParser.parseDataFile(input))
-                    case "4.dat" =>
-                        dataFileMap = dataFileMap ++ Map(4 -> DataFileParser.parseDataFile(input))
-                    case "6.dat" =>
-                        dataFileMap = dataFileMap ++ Map(5 -> DataFileParser.parseDataFile(input))
-                    case "7.dat" =>
-                        dataFileMap = dataFileMap ++ Map(6 -> DataFileParser.parseDataFile(input))
-                    case "8.dat" =>
-                        dataFileMap = dataFileMap ++ Map(7 -> DataFileParser.parseDataFile(input))
-                    case "9.dat" =>
-                        dataFileMap = dataFileMap ++ Map(8 -> DataFileParser.parseDataFile(input))
-                    case "0.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(1 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(1 -> List.empty[DefectLog])
-                    case "1.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(2 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(2 -> List.empty[DefectLog])
-                    case "2.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(3 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(3 -> List.empty[DefectLog])
-                    case "3.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(4 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(4 -> List.empty[DefectLog])
-                    case "5.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(5 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(5 -> List.empty[DefectLog])
-                    case "6.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(6 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(6 -> List.empty[DefectLog])
-                    case "7.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(7 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(7 -> List.empty[DefectLog])
-                    case "8.def" =>
-                        if (zipEntry.getSize != 0)
-                            defectLogMap = defectLogMap ++ Map(8 -> LogFileParser.parseDefectLog(input))
-                        else
-                            defectLogMap = defectLogMap ++ Map(8 -> List.empty[DefectLog])
-                    case _ => null
-                }
-                zipEntry = zipInputStream.getNextEntry()
+        val zipFile = new File(path)
+        val zipInputStream = new ZipInputStream(new FileInputStream(zipFile))
+        
+        var zipEntry: ZipEntry = zipInputStream.getNextEntry()
+        while (zipEntry != null) {
+            val input = ParserUtils.zipInputToByteArrayInput(zipInputStream)
+            zipEntry.getName() match {
+                case "timelog.xml" =>
+                    if (zipEntry.getSize != 0)
+                        timeLogs = LogFileParser.parseTimeLog(input)
+                    else
+                        timeLogs = List.empty[TimeLog]
+                case "1.dat" =>
+                    dataFileMap = dataFileMap ++ Map(1 -> DataFileParser.parseDataFile(input))
+                case "2.dat" =>
+                    dataFileMap = dataFileMap ++ Map(2 -> DataFileParser.parseDataFile(input))
+                case "3.dat" =>
+                    dataFileMap = dataFileMap ++ Map(3 -> DataFileParser.parseDataFile(input))
+                case "4.dat" =>
+                    dataFileMap = dataFileMap ++ Map(4 -> DataFileParser.parseDataFile(input))
+                case "6.dat" =>
+                    dataFileMap = dataFileMap ++ Map(5 -> DataFileParser.parseDataFile(input))
+                case "7.dat" =>
+                    dataFileMap = dataFileMap ++ Map(6 -> DataFileParser.parseDataFile(input))
+                case "8.dat" =>
+                    dataFileMap = dataFileMap ++ Map(7 -> DataFileParser.parseDataFile(input))
+                case "9.dat" =>
+                    dataFileMap = dataFileMap ++ Map(8 -> DataFileParser.parseDataFile(input))
+                case "0.def" =>
+                    // zipEntry.getSizeが0の場合は、欠陥ログが無い(欠陥が発生していない)ので空のリストを追加する
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(1 -> LogFileParser.parseDefectLog(input, 1))
+                    else
+                        defectLogMap = defectLogMap ++ Map(1 -> List.empty[DefectLog])
+                case "1.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(2 -> LogFileParser.parseDefectLog(input, 2))
+                    else
+                        defectLogMap = defectLogMap ++ Map(2 -> List.empty[DefectLog])
+                case "2.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(3 -> LogFileParser.parseDefectLog(input, 3))
+                    else
+                        defectLogMap = defectLogMap ++ Map(3 -> List.empty[DefectLog])
+                case "3.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(4 -> LogFileParser.parseDefectLog(input, 4))
+                    else
+                        defectLogMap = defectLogMap ++ Map(4 -> List.empty[DefectLog])
+                case "5.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(5 -> LogFileParser.parseDefectLog(input, 5))
+                    else
+                        defectLogMap = defectLogMap ++ Map(5 -> List.empty[DefectLog])
+                case "6.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(6 -> LogFileParser.parseDefectLog(input, 6))
+                    else
+                        defectLogMap = defectLogMap ++ Map(6 -> List.empty[DefectLog])
+                case "7.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(7 -> LogFileParser.parseDefectLog(input, 7))
+                    else
+                        defectLogMap = defectLogMap ++ Map(7 -> List.empty[DefectLog])
+                case "8.def" =>
+                    if (zipEntry.getSize != 0)
+                        defectLogMap = defectLogMap ++ Map(8 -> LogFileParser.parseDefectLog(input, 8))
+                    else
+                        defectLogMap = defectLogMap ++ Map(8 -> List.empty[DefectLog])
+                case _ => null
             }
-        } catch {
-            case e: Exception => println(e)
-            return null
+            zipEntry = zipInputStream.getNextEntry()
         }
 
-        new ProcessData(
-            timeLogs,
-            flatDefectLogMap(defectLogMap),
-            loadProgramDatas(timeLogs, defectLogMap, dataFileMap)
-        )
+        // 欠陥ログを1つのリストにまとめてからデータを返す
+        (timeLogs, flatDefectLogMap(defectLogMap), dataFileMap)
     }
 
+    /**
+     * 欠陥ログのMapを1つのリストにまとめる
+     */
     private def flatDefectLogMap(defectLogMap: Map[Int, List[DefectLog]]): List[DefectLog] = {
         defectLogMap.getOrElse(1, List.empty[DefectLog]) ++
         defectLogMap.getOrElse(2, List.empty[DefectLog]) ++
@@ -114,17 +121,20 @@ object PDashDataExtractor {
         defectLogMap.getOrElse(8, List.empty[DefectLog])
     }
 
-    private def loadProgramDatas(timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMaps: Map[Int, Map[String, Any]]): Map[Int, ProgramData] = {
+    /**
+     * プログラムデータを読み込む
+     */
+    private def loadProgramDatas(timeLogs: List[TimeLog], defectLogs: List[DefectLog], dataFileMaps: Map[Int, Map[String, Any]]): Map[Int, ProgramData] = {
         var programDatas = Map[Int, ProgramData]()
 
-        dataFileMaps.foreach((num, dataFileMap) => {
-            val basePart = loadBaseParts(dataFileMap)
-            val additionalPart = loadAdditionalParts(dataFileMap)
-            val reusedPart = loadReusedParts(dataFileMap)
-            val sizeEstimateData = loadSizeEstimateData(dataFileMap, "Estimated New & Changed LOC")
-            val timeEstimateData = loadSizeEstimateData(dataFileMap, "Estimated Time")
-            val probeList = dataFileMap.getOrElse("PROBE_LIST", List.empty[String]).asInstanceOf[List[String]]
-            val totalSize = getDoubleValue(dataFileMap, "Total LOC")
+        dataFileMaps.foreach((num, dataFile) => {
+            val basePart = loadBaseParts(dataFile)
+            val additionalPart = loadAdditionalParts(dataFile)
+            val reusedPart = loadReusedParts(dataFile)
+            val sizeEstimateData = loadSizeEstimateData(dataFile, "Estimated New & Changed LOC")
+            val timeEstimateData = loadSizeEstimateData(dataFile, "Estimated Time")
+            val probeList = dataFile.getOrElse("PROBE_LIST", List.empty[String]).asInstanceOf[List[String]]
+            val totalSize = getDoubleValue(dataFile, "Total LOC")
 
             val process = num match {
                 case 1 => "PSP0"
@@ -135,11 +145,12 @@ object PDashDataExtractor {
                 case _ => "PSP2.1"
             }
 
-            val programTimeLogs = timeLogs.filter(_.program == s"Program $num")
+            val programTimeLogs = timeLogs.filter(_.programNumber == num)
             val totalTime = programTimeLogs.map(_.delta).sum
-            val programDefectLogs = defectLogMap.getOrElse(num, List.empty[DefectLog])
-            val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogMap, dataFileMaps)
+            val programDefectLogs = defectLogs.filter(_.programNumber == num)
             val totalDefects = programDefectLogs.map(_.count).sum
+
+            val phaseDatas = loadPhaseDatas(num, timeLogs, defectLogs, dataFileMaps)
 
             val programData = new ProgramData(
                 num, process, programTimeLogs, programDefectLogs, phaseDatas,
@@ -153,30 +164,38 @@ object PDashDataExtractor {
         programDatas
     }
 
-    private def loadPhaseDatas(num: Int, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[Int, Map[String, Any]]): Map[String, PhaseData] = {
+    /**
+     * 指定したプログラム番号における全フェーズのデータのMapを読み込む
+     */
+    private def loadPhaseDatas(num: Int, timeLogs: List[TimeLog], defectLogs: List[DefectLog], dataFileMap: Map[Int, Map[String, Any]]): Map[String, PhaseData] = {
         var phaseDatas = Map[String, PhaseData]()
 
         phaseDatas = phaseDatas
-            + ("Planning" -> loadPhaseData(num, "Planning", timeLogs, defectLogMap, dataFileMap))
+            + ("Planning" -> loadPhaseData(num, "Planning", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Design" -> loadPhaseData(num, "Design", timeLogs, defectLogMap, dataFileMap))
+            + ("Design" -> loadPhaseData(num, "Design", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Design Review" -> loadPhaseData(num, "Design Review", timeLogs, defectLogMap, dataFileMap))
+            + ("Design Review" -> loadPhaseData(num, "Design Review", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Code" -> loadPhaseData(num, "Code", timeLogs, defectLogMap, dataFileMap))
+            + ("Code" -> loadPhaseData(num, "Code", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Code Review" -> loadPhaseData(num, "Code Review", timeLogs, defectLogMap, dataFileMap))
+            + ("Code Review" -> loadPhaseData(num, "Code Review", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Compile" -> loadPhaseData(num, "Compile", timeLogs, defectLogMap, dataFileMap))
+            + ("Compile" -> loadPhaseData(num, "Compile", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Test" -> loadPhaseData(num, "Test", timeLogs, defectLogMap, dataFileMap))
+            + ("Test" -> loadPhaseData(num, "Test", timeLogs, defectLogs, dataFileMap))
         phaseDatas = phaseDatas
-            + ("Postmortem" -> loadPhaseData(num, "Postmortem", timeLogs, defectLogMap, dataFileMap))
+            + ("Postmortem" -> loadPhaseData(num, "Postmortem", timeLogs, defectLogs, dataFileMap))
+        phaseDatas = phaseDatas
+            + ("After Development" -> loadPhaseData(num, "After Development", timeLogs, defectLogs, dataFileMap))
 
         phaseDatas
     }
 
-    private def loadPhaseData(num: Int, phase: String, timeLogs: List[TimeLog], defectLogMap: Map[Int, List[DefectLog]], dataFileMap: Map[Int, Map[String, Any]]): PhaseData = {
+    /**
+     * フェーズごとのデータを読み込む
+     */
+    private def loadPhaseData(num: Int, phase: String, timeLogs: List[TimeLog], defectLogs: List[DefectLog], dataFileMap: Map[Int, Map[String, Any]]): PhaseData = {
         val started = getDateValue(dataFileMap(num), s"$phase/Started")
         val completed = getDateValue(dataFileMap(num), s"$phase/Completed")
         val time = getDoubleValue(dataFileMap(num), s"$phase/Time")
@@ -185,33 +204,17 @@ object PDashDataExtractor {
 
         var estTime = getDoubleValue(dataFileMap(num), s"$phase/Estimated Time")
         if (estTime == 0.0) {
-            if (1 < num && num <= 4) {
-                val phaseCumTime = (1 until num).map(i =>
-                    timeLogs.filter(_.program == s"Program $i")
-                      .filter(_.phase == phase)
-                      .map(_.delta)
-                      .sum
-                ).sum
-                val cumTime = (1 until num).map(i =>
-                    timeLogs.filter(_.program == s"Program $i")
-                      .map(_.delta)
-                      .sum
-                ).sum
+            if (2 <= num && num <= 4) {
+                val phaseCumTime = cumulativeTimeBetween(1, num - 1, phase, timeLogs)
+                val cumTime = cumulativeTotalTimeBetween(1, num - 1, timeLogs)
                 val estTotalTime = getDoubleValue(dataFileMap(num), "Estimated Time")
 
                 estTime = (phaseCumTime / cumTime) * estTotalTime
-            } else if (5 <= num && num <= 8) {
-                val phaseCumTime = (5 until num).map(i =>
-                    timeLogs.filter(_.program == s"Program $i")
-                      .filter(_.phase == phase)
-                      .map(_.delta)
-                      .sum
-                ).sum
-                val cumTime = (5 until num).map(i =>
-                    timeLogs.filter(_.program == s"Program $i")
-                      .map(_.delta)
-                      .sum
-                ).sum
+            } else if (num >= 5) {
+                // PSP2では課題5以降のデータを利用する
+                // 課題5では過去の実績が存在しないため手動で入力したデータが保存されているはず
+                val phaseCumTime = cumulativeTimeBetween(5, num - 1, phase, timeLogs)
+                val cumTime = cumulativeTotalTimeBetween(5, num - 1, timeLogs)
                 val estTotalTime = getDoubleValue(dataFileMap(num), "Estimated Time")
 
                 estTime = (phaseCumTime / cumTime) * estTotalTime
@@ -220,65 +223,44 @@ object PDashDataExtractor {
 
         var estInjectedDefects = getDoubleValue(dataFileMap(num), s"$phase/Estimated Defects Injected")
         var estRemovedDefects = getDoubleValue(dataFileMap(num), s"$phase/Estimated Defects Removed")
-        if (estInjectedDefects == 0.0 && num >= 5) {
-            val phaseCumInjDefects = if (num == 5) {
-                (1 until num).map(i =>
-                    defectLogMap(i).filter(_.injected == phase)
-                      .map(_.count)
-                      .sum
-                ).sum
-            } else {
-                (5 until num).map(i =>
-                    defectLogMap(i).filter(_.injected == phase)
-                      .map(_.count)
-                      .sum
-                ).sum
-            }
+        if (num == 5) {
+            // 課題5ではPSP2のデータがないため、課題1から4のデータを利用する
+            val phaseCumInjDefects = cumulativeInjectedDefectsBetween(1, 4, phase, defectLogs)
+            val phaseCumRemDefects = cumulativeRemovedDefectsBetween(1, 4, phase, defectLogs)
+            val cumDefects = cumlativeTotalDefectsBetween(1, 4, defectLogs)
 
-            val phaseCumRemDefects = if (num == 5) {
-                (1 until num).map(i =>
-                    defectLogMap(i).filter(_.removed == phase)
-                      .map(_.count)
-                      .sum
-                ).sum
-            } else {
-                (5 until num).map(i =>
-                    defectLogMap(i).filter(_.removed == phase)
-                      .map(_.count)
-                      .sum
-                ).sum
-            }
+            val cumTotalNandCSize = cumlativeAddedAndModifiedSizeBetween(1, 4, dataFileMap)
+            val estTotalNandCSize = getDoubleValue(dataFileMap(5), "Estimated New & Changed LOC")
 
-            val cumDefects = if (num == 5) {
-                (1 until num).map(i =>
-                    defectLogMap(i).map(_.count).sum
-                ).sum
-            } else {
-                (5 until num).map(i =>
-                    defectLogMap(i).map(_.count).sum
-                ).sum
-            }
+            val estTotalInjectedDefects = (cumDefects / cumTotalNandCSize) * estTotalNandCSize
+            // println(s"Program $num, $phase, $estTotalInjectedDefects, $cumDefects, $cumTotalNandCSize, $estTotalNandCSize")
 
-            val cumTotalSize = if (num == 5) {
-                (3 until num).map(i => {
-                    val cumAdded = loadBaseParts(dataFileMap(i)).map(_.actAdded).sum
-                    val cumModified = loadBaseParts(dataFileMap(i)).map(_.actModified).sum
-                    val cumPartsAdded = loadAdditionalParts(dataFileMap(i)).map(_.actSize).sum
-                    cumAdded + cumModified + cumPartsAdded
-                }).sum + getDoubleValue(dataFileMap(1), "Total LOC") + getDoubleValue(dataFileMap(2), "Total LOC")
-            } else {
-                (5 until num).map(i => {
-                    val cumAdded = loadBaseParts(dataFileMap(i)).map(_.actAdded).sum
-                    val cumModified = loadBaseParts(dataFileMap(i)).map(_.actModified).sum
-                    val cumPartsAdded = loadAdditionalParts(dataFileMap(i)).map(_.actSize).sum
-                    cumAdded + cumModified + cumPartsAdded
-                }).sum
+            if (estInjectedDefects == 0.0 && phaseCumInjDefects != 0.0) {
+                // もともと入っていた値が0.0かつ、実際の計算結果が0.0でない場合は
+                // Process Dashboardがデータとして保存せずに毎回計算しているので、上記の計算結果を利用する
+                // 基本的にはこのケースだが、課題5のように手動で計算する場合はデータとして保存されているので
+                // 計算結果は使用せずに保存されていた値を利用する
+                estInjectedDefects = (phaseCumInjDefects / cumDefects) * estTotalInjectedDefects
             }
-            val estTotalSize = getDoubleValue(dataFileMap(num), "Estimated New & Changed LOC")
+            if (estRemovedDefects == 0.0 && phaseCumRemDefects != 0.0) {
+                estRemovedDefects = (phaseCumRemDefects / cumDefects) * estTotalInjectedDefects
+            }
+        } else if (num >= 6) {
+            // 課題6以降ではPSP2のデータを利用する
+            val phaseCumInjDefects = cumulativeInjectedDefectsBetween(5, num - 1, phase, defectLogs)
+            val phaseCumRemDefects = cumulativeRemovedDefectsBetween(5, num - 1, phase, defectLogs)
+            val cumDefects = cumlativeTotalDefectsBetween(5, num - 1, defectLogs)
 
-            val estTotalInjectedDefects = (cumDefects / cumTotalSize) * estTotalSize
-            estInjectedDefects = (phaseCumInjDefects / cumDefects) * estTotalInjectedDefects
-            if (estRemovedDefects == 0.0) {
+            val cumTotalNandCSize = cumlativeAddedAndModifiedSizeBetween(5, num - 1, dataFileMap)
+            val estTotalNandCSize = getDoubleValue(dataFileMap(num), "Estimated New & Changed LOC")
+
+            val estTotalInjectedDefects = (cumDefects / cumTotalNandCSize) * estTotalNandCSize
+            // println(s"Program $num, $phase, $estTotalInjectedDefects, $cumDefects, $cumTotalNandCSize, $estTotalNandCSize")
+
+            if (estInjectedDefects == 0.0 && phaseCumInjDefects != 0.0) {
+                estInjectedDefects = (phaseCumInjDefects / cumDefects) * estTotalInjectedDefects
+            }
+            if (estRemovedDefects == 0.0 && phaseCumRemDefects != 0.0) {
                 estRemovedDefects = (phaseCumRemDefects / cumDefects) * estTotalInjectedDefects
             }
         }
@@ -289,6 +271,65 @@ object PDashDataExtractor {
         )
     }
 
+    /**
+     * 指定した課題までのフェーズごとの累積時間を返す
+     */
+    private def cumulativeTimeBetween(from: Int, to: Int, phase: String, timeLogs: List[TimeLog]): Double = {
+        (from to to).map(i => timeLogs.filter(_.programNumber == i).filter(_.phase == phase).map(_.delta).sum).sum
+    }
+
+    /**
+     * 指定した課題までの累積時間を返す
+     */
+    private def cumulativeTotalTimeBetween(from: Int, to: Int, timeLogs: List[TimeLog]): Double = {
+        (from to to).map(i => timeLogs.filter(_.programNumber == i).map(_.delta).sum).sum
+    }
+
+    /**
+     * 指定した課題範囲におけるフェーズごとの埋め込まれた欠陥の累積値を返す
+     */
+    private def cumulativeInjectedDefectsBetween(from: Int, to: Int, phase: String, defectLogs: List[DefectLog]): Double = {
+        (from to to).map(i => defectLogs.filter(_.programNumber == i).filter(_.injected == phase).map(_.count).sum).sum
+    }
+
+    /**
+     * 指定した課題範囲におけるフェーズごとの除去した欠陥の累積値を返す
+     */
+    private def cumulativeRemovedDefectsBetween(from: Int, to: Int, phase: String, defectLogs: List[DefectLog]): Double = {
+        (from to to).map(i => defectLogs.filter(_.programNumber == i).filter(_.removed == phase).map(_.count).sum).sum
+    }
+
+    /**
+     * 指定した課題範囲で発生した欠陥の累積値を返す
+     */
+    private def cumlativeTotalDefectsBetween(from: Int, to: Int, defectLogs: List[DefectLog]): Double = {
+        (from to to).map(i => defectLogs.filter(_.programNumber == i).map(_.count).sum).sum
+    }
+
+    /**
+     * 指定した課題範囲でAdd And Modified規模の累積値を返す
+     */
+    private def cumlativeAddedAndModifiedSizeBetween(from: Int, to: Int, dataFileMap: Map[Int, Map[String, Any]]): Double = {
+        (from to to).map(i => {
+            if (i == 1 || i == 2) {
+                // 課題1と2では簡単な規模見積りしかせず、再利用部品などを考慮する必要がないため
+                // Total LOCに保存されている値をそのまま利用する
+
+                // println(s"Program $i ${getDoubleValue(dataFileMap(i), "Total LOC")}")
+                getDoubleValue(dataFileMap(i), "Total LOC")
+            } else {
+                val cumAdded = loadBaseParts(dataFileMap(i)).map(_.actAdded).sum
+                val cumModified = loadBaseParts(dataFileMap(i)).map(_.actModified).sum
+                val cumPartsAdded = loadAdditionalParts(dataFileMap(i)).map(_.actSize).sum
+                // println(s"Program $i ${cumAdded + cumModified + cumPartsAdded}")
+                cumAdded + cumModified + cumPartsAdded            
+            }
+        }).sum
+    }
+
+    /**
+     * ベース部品のデータを読み込む
+     */
     private def loadBaseParts(programData: Map[String, Any]): List[BasePart] = {
         var baseParts = List[BasePart]()
 
@@ -310,7 +351,7 @@ object PDashDataExtractor {
                 actBase, actAdded, actModified, actDeleted
             )
 
-            // 名前が空の場合は追加しない
+            // 名前が空の場合は部品として追加しない
             if (name != "") {
                 baseParts = baseParts :+ basePart
             }
@@ -319,6 +360,9 @@ object PDashDataExtractor {
         baseParts
     }
 
+    /**
+     * 追加部品のデータを読み込む
+     */
     private def loadAdditionalParts(programData: Map[String, Any]): List[AdditionalPart] = {
         var additionalParts = List[AdditionalPart]()
 
@@ -350,6 +394,9 @@ object PDashDataExtractor {
         additionalParts
     }
 
+    /**
+     * 再利用部品のデータを読み込む
+     */
     private def loadReusedParts(programData: Map[String, Any]): List[ReusedPart] = {
         var reusedParts = List[ReusedPart]()
 
@@ -371,6 +418,9 @@ object PDashDataExtractor {
         reusedParts
     }
 
+    /**
+     * 規模見積りデータを読み込む
+     */
     private def loadSizeEstimateData(programData: Map[String, Any], key: String): EstimateData = {
         new EstimateData(
             getDoubleValue(programData, s"$key"),

@@ -15,7 +15,9 @@ object DataFileParser {
         val parts = line.split("=")
 
         val key = parts(0)
-        // parts.length == 3は"=="で区切られている場合を表す
+
+        // "=="で区切られている場合はparts.lengthが3となるので、parts(2)から取得
+        // そうでない場合はparts.lengthが2となるので、parts(1)から取得
         var value = if (parts.length == 3) parts(2) else parts(1)
 
         // "=\"で区切られている場合は、valueの先頭の"を削除
@@ -58,9 +60,13 @@ object DataFileParser {
         programData
     }
 
+    /**
+     * 文字列を適切な型に変換する
+     */
     private def convertValue(value: String): Any = {
         value match {
             case strDate if strDate.startsWith("@")
+                // @で始まる文字列はUNIX時間(ミリ秒)
                 => new Date(strDate.substring(1).toLong)
             case strList if strList.charAt(0) == '\u0002'
                 // 制御文字STRで始まる場合はリストに変換
@@ -77,6 +83,9 @@ object DataFileParser {
         }
     }
     
+    /**
+     * 文字列がDoubleに変換可能かどうかを判定する
+     */
     private def isDouble(value: String): Boolean = {
         try {
             value.toDouble
